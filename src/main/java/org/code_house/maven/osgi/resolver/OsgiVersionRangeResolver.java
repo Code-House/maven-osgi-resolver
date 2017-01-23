@@ -3,7 +3,6 @@ package org.code_house.maven.osgi.resolver;
 import org.apache.commons.lang3.Validate;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
 import org.code_house.maven.osgi.resolver.version.OsgiVersionScheme;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -35,7 +34,6 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionConstraint;
 import org.eclipse.aether.version.VersionScheme;
-import org.osgi.framework.VersionRange;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,21 +46,16 @@ import java.util.Map;
 
 @Named
 @Component(role = VersionRangeResolver.class, hint = "enhanced")
-public class OsgiVersionRangeResolver implements VersionRangeResolver, Service {
+public class OsgiVersionRangeResolver implements VersionRangeResolver {
 
     private static final String MAVEN_METADATA_XML = "maven-metadata.xml";
 
-    @SuppressWarnings("unused")
-    @Requirement(role = LoggerFactory.class)
     private Logger logger = NullLoggerFactory.LOGGER;
 
-    @Requirement
     private MetadataResolver metadataResolver;
 
-    @Requirement
     private SyncContextFactory syncContextFactory;
 
-    @Requirement
     private RepositoryEventDispatcher repositoryEventDispatcher;
 
     public OsgiVersionRangeResolver() {
@@ -70,28 +63,15 @@ public class OsgiVersionRangeResolver implements VersionRangeResolver, Service {
     }
 
     @Inject
-    OsgiVersionRangeResolver(MetadataResolver metadataResolver, SyncContextFactory syncContextFactory, RepositoryEventDispatcher repositoryEventDispatcher, LoggerFactory loggerFactory) {
+    public OsgiVersionRangeResolver(MetadataResolver metadataResolver, SyncContextFactory syncContextFactory, RepositoryEventDispatcher repositoryEventDispatcher, LoggerFactory loggerFactory) {
         setMetadataResolver(metadataResolver);
         setSyncContextFactory(syncContextFactory);
         setLoggerFactory(loggerFactory);
         setRepositoryEventDispatcher(repositoryEventDispatcher);
     }
 
-    public void initService(ServiceLocator locator) {
-        setLoggerFactory(locator.getService(LoggerFactory.class));
-        setMetadataResolver(locator.getService(MetadataResolver.class));
-        setSyncContextFactory(locator.getService(SyncContextFactory.class));
-        setRepositoryEventDispatcher(locator.getService(RepositoryEventDispatcher.class));
-    }
-
-    public OsgiVersionRangeResolver setLoggerFactory(LoggerFactory loggerFactory) {
+    protected void setLoggerFactory(LoggerFactory loggerFactory) {
         this.logger = NullLoggerFactory.getSafeLogger(loggerFactory, getClass());
-        return this;
-    }
-
-    void setLogger(LoggerFactory loggerFactory) {
-        // plexus support
-        setLoggerFactory(loggerFactory);
     }
 
     public OsgiVersionRangeResolver setMetadataResolver(MetadataResolver metadataResolver) {
