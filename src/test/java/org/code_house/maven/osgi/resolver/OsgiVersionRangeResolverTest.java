@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+
 public class OsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
 
     private OsgiVersionRangeResolver versionRangeResolver;
@@ -21,28 +22,19 @@ public class OsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
     }
 
     @Override
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         super.setUp();
-        // be sure we're testing the right class, i.e. DefaultVersionResolver.class
-        versionRangeResolver = (OsgiVersionRangeResolver) lookup( VersionRangeResolver.class, "enhanced" );
+        versionRangeResolver = (OsgiVersionRangeResolver) lookup(VersionRangeResolver.class, "enhanced");
     }
 
-
-
     @Override
-    protected void tearDown()
-        throws Exception
-    {
-        versionRangeResolver = null;
+    protected void tearDown() throws Exception {
         super.tearDown();
+        versionRangeResolver = null;
     }
 
     @Test
-    public void testResolveRange()
-        throws Exception
-    {
+    public void testResolveRange() throws Exception {
         VersionRangeRequest requestB = new VersionRangeRequest();
         requestB.addRepository( newTestRepository() );
         Artifact artifactB = new DefaultArtifact( "org.apache.maven.its:dep-mng-range:[3.0,4)");
@@ -73,6 +65,27 @@ public class OsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
         assertEquals( "3.0.3-SNAPSHOT", iterator.next());
         assertEquals( "3.0.4-SNAPSHOT", iterator.next());
         assertEquals( "3.0.5", iterator.next());
+        assertEquals( "3.0.5", resolved.getLast());
+
+    }
+
+    @Test
+    public void testResolveStaticVersion() throws Exception {
+        VersionRangeRequest requestB = new VersionRangeRequest();
+        requestB.addRepository( newTestRepository() );
+        Artifact artifactB = new DefaultArtifact( "org.apache.maven.its:dep-mng-range:3.0.5");
+        requestB.setArtifact( artifactB );
+
+        VersionRangeResult resultB = versionRangeResolver.resolveVersionRange( session, requestB );
+        List<Version> versions = resultB.getVersions();
+        System.out.println(versions);
+        assertEquals(1, versions.size());
+
+        LinkedList<String> resolved = new LinkedList<>();
+        for (Version version : versions) {
+            resolved.add(version.toString());
+        }
+
         assertEquals( "3.0.5", resolved.getLast());
 
     }

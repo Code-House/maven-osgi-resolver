@@ -30,6 +30,7 @@ import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.spi.log.Logger;
 import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.spi.log.NullLoggerFactory;
+import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionConstraint;
@@ -45,7 +46,10 @@ import java.util.List;
 import java.util.Map;
 
 @Named
-@Component(role = VersionRangeResolver.class, hint = "enhanced")
+@Component(
+    role = VersionRangeResolver.class
+    //, hint = "enhanced"
+)
 public class OsgiVersionRangeResolver implements VersionRangeResolver {
 
     private static final String MAVEN_METADATA_XML = "maven-metadata.xml";
@@ -93,27 +97,35 @@ public class OsgiVersionRangeResolver implements VersionRangeResolver {
     public VersionRangeResult resolveVersionRange(RepositorySystemSession session, VersionRangeRequest request) throws VersionRangeResolutionException {
         VersionRangeResult result = new VersionRangeResult(request);
 
-        VersionScheme versionScheme = new OsgiVersionScheme();
+        VersionScheme osgiVersionScheme = new OsgiVersionScheme();
+        VersionScheme regularVersionScheme = new GenericVersionScheme();
 
         VersionConstraint versionConstraint;
         try {
-            versionConstraint = versionScheme.parseVersionConstraint(request.getArtifact().getVersion());
+            versionConstraint = regularVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
         } catch (InvalidVersionSpecificationException e) {
             result.addException(e);
             throw new VersionRangeResolutionException(result);
         }
 
-        result.setVersionConstraint(versionConstraint);
-
         if (versionConstraint.getRange() == null) {
+            result.setVersionConstraint(versionConstraint);
             result.addVersion(versionConstraint.getVersion());
         } else {
+            try {
+                versionConstraint = osgiVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
+            } catch (InvalidVersionSpecificationException e) {
+                result.addException(e);
+                throw new VersionRangeResolutionException(result);
+            }
+            result.setVersionConstraint(versionConstraint);
+
             Map<String, ArtifactRepository> versionIndex = getVersions(session, result, request);
 
             List<Version> versions = new ArrayList<>();
             for (Map.Entry<String, ArtifactRepository> v : versionIndex.entrySet()) {
                 try {
-                    Version ver = versionScheme.parseVersion(v.getKey());
+                    Version ver = osgiVersionScheme.parseVersion(v.getKey());
                     if (versionConstraint.containsVersion(ver)) {
                         versions.add(ver);
                         result.setRepository(ver, v.getValue());

@@ -1,5 +1,6 @@
 package org.code_house.maven.osgi.resolver.version;
 
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.VersionConstraint;
 
 import org.osgi.framework.Version;
@@ -12,14 +13,19 @@ import java.util.Objects;
  */
 public class OsgiVersionConstraint implements VersionConstraint {
     private final String constraint;
+    private final OsgiVersionRange versionRange;
 
-    public OsgiVersionConstraint(String constraint) {
+    public OsgiVersionConstraint(String constraint) throws InvalidVersionSpecificationException {
+        this.versionRange = new OsgiVersionRange(constraint);
         this.constraint = constraint;
     }
 
     @Override
     public org.eclipse.aether.version.VersionRange getRange() {
-        return new OsgiVersionRange(constraint);
+        if (versionRange.isExact()) {
+            return null; // we have just one version
+        }
+        return versionRange;
     }
 
     @Override

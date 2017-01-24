@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.code_house.maven.osgi.resolver.version;
 
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 
@@ -22,8 +23,8 @@ final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange 
 
     private final VersionRange range;
 
-    OsgiVersionRange(String range) {
-        this.range = new VersionRange(range);
+    OsgiVersionRange(String range) throws InvalidVersionSpecificationException {
+        this.range = new VersionRange(normalize(range));
     }
 
     @Override
@@ -31,7 +32,16 @@ final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange 
         if (version instanceof OsgiVersion) {
             return range.includes(((OsgiVersion) version).getVersion());
         }
+
         return range.includes(new Version(version.toString()));
+    }
+
+    public boolean isEmpty() {
+        return range.isEmpty();
+    }
+
+    public boolean isExact() {
+        return range.isExact();
     }
 
     @Override
@@ -61,4 +71,13 @@ final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange 
     public String toString() {
         return "Osgi VersionRange[" + range + ']';
     }
+
+    private static String normalize(String range) {
+        // for versions which are not ranges osgi creates open range X,0.0.0, we don't want to do it, we want exact version
+        if (range.charAt(0) == VersionRange.LEFT_CLOSED || range.charAt(0) == VersionRange.LEFT_OPEN) {
+            return range;
+        }
+        return VersionRange.LEFT_CLOSED + range + ',' + range + VersionRange.RIGHT_CLOSED;
+    }
+
 }
