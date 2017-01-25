@@ -35,6 +35,7 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionConstraint;
 import org.eclipse.aether.version.VersionScheme;
+import org.eclipse.sisu.Priority;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,11 +46,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Named
 @Component(
     role = VersionRangeResolver.class
     //, hint = "enhanced"
 )
+@Priority(3000)
 public class OsgiVersionRangeResolver implements VersionRangeResolver {
 
     private static final String MAVEN_METADATA_XML = "maven-metadata.xml";

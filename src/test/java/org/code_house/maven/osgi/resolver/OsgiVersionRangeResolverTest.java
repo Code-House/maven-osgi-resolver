@@ -24,7 +24,7 @@ public class OsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        versionRangeResolver = (OsgiVersionRangeResolver) lookup(VersionRangeResolver.class, "enhanced");
+        versionRangeResolver = (OsgiVersionRangeResolver) lookup(VersionRangeResolver.class);
     }
 
     @Override
