@@ -8,9 +8,41 @@ To avoid troubles a small customization of version resolver has been created.
 
 ## Current troubles
 While this code is pretty messy and does embed `osgi.core` jar it does quite simple thing. Most of code comes from requirements
-of aether api implementations. For example `DefaultVersionRangeResolver` despite of its name is not meant to be extended which
-brought most of code to project.
-Test classes (beyond OsgiVersionRangeResolverTest) is copy of `aether-impl` base classes.
+of aether api implementations. For example maven's `DefaultVersionRangeResolver` despite of its name is not meant to be extended which
+brought most of code to this project.
+Test classes (beyond OsgiVersionRangeResolverTest) is copy of `aether-impl` version test classe.
 
 ### Usage in Maven build
-Even if maven uses aether for some dependency resolution it is currently not possible to use this component as build extension.
+To take benefit of OSGi version ranges please create in root of your multi module project `.mvn/extensions.xml` file and place there:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<extensions>
+    <extension>
+        <groupId>org.code-house.maven</groupId>
+        <artifactId>osgi</artifactId>
+        <version>[version]</version>
+    </extension>
+</extensions>
+```
+
+### Version range types
+Main difference between Maven and OSGi is how they understand versioning in general and then how they treat ranges. For example
+both allows to specify "default" version. In case of Maven it's `RELEASE`, in case of OSGi it will be `0.0.0`. Maven users can
+also point to latest available snapshot in any version by using `LATEST` version on dependency. This has no effect in OSGi since
+it does not distinguish version types.
+
+#### Strict
+Strict resolver always uses OSGi logic for resolving versions.
+
+#### Compatible
+Compatible resolver uses OSGi range logic but keeps maven's version types allowing to order versions in natural way (ie. SNAPSHOT < RELEASE).
+
+
+## Discamler
+Even if maven uses Eclipse Aether (which is abandoned and being transferred to Apache Software Foundation) which uses component
+oriented architecture, coupling between different types is so high that changing this logic might bring side effects. Always
+verify your build after plugging in this extension.
+
+This extension overrides single core component from maven core and might not work with further versions of maven. See investigation notes
+on [maven users](http://markmail.org/message/z6x27umabwqhdjvy) and [developers](http://markmail.org/message/r2jnrtwrio75v4zq)
+mailing lists.

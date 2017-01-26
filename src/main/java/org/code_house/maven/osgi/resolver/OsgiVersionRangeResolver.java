@@ -5,7 +5,6 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.code_house.maven.osgi.resolver.version.OsgiVersionScheme;
 import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.IOUtil;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.RepositorySystemSession;
@@ -35,10 +34,8 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionConstraint;
 import org.eclipse.aether.version.VersionScheme;
-import org.eclipse.sisu.Priority;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,11 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component(
-    role = VersionRangeResolver.class
-    //, hint = "enhanced"
-)
-@Priority(3000)
+@Component(role = VersionRangeResolver.class)
 public class OsgiVersionRangeResolver implements VersionRangeResolver {
 
     private static final String MAVEN_METADATA_XML = "maven-metadata.xml";

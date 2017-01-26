@@ -1,5 +1,6 @@
 package org.code_house.maven.osgi.resolver;
 
+import org.code_house.maven.osgi.resolver.version.OsgiVersion;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.impl.VersionRangeResolver;
@@ -57,7 +58,11 @@ public class OsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
 
         LinkedList<String> resolved = new LinkedList<>();
         for (Version version : versions) {
-            resolved.add(version.toString());
+            if (version instanceof OsgiVersion) {
+                resolved.add(((OsgiVersion) version).getRawVersion());
+            } else {
+                resolved.add(version.toString());
+            }
         }
 
         Iterator<String> iterator = resolved.iterator();
