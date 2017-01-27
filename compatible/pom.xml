@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.code-house.maven.resolver</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.3.9-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>compatible</artifactId>
+
+    <name>Maven OSGi resolver :: Compatible</name>
+    <description>Resolver implementation which keeps OSGi range resolution compatibility and maven's version order.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.code-house.maven.resolver</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
