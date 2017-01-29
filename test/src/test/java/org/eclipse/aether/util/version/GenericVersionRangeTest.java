@@ -1,46 +1,49 @@
-/*******************************************************************************
- * Copyright (c) 2010, 2013 Sonatype, Inc.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/*
+ * (C) Copyright 2017 Code-House, Łukasz Dywicki.
  *
- * Contributors:
- *    Sonatype, Inc. - initial API and implementation
- *******************************************************************************/
-package org.code_house.maven.osgi.resolver.version;
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.eclipse.aether.util.version;
 
+import org.code_house.maven.osgi.resolver.test.VersionRangeTest;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.Version;
-import org.eclipse.aether.version.VersionRange;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, OsgiVersion> {
+/**
+ * Customized version of aether generic version. Located here to verify {@link VersionRangeTest} and to track eventual
+ * changes in aether's logic.
+ */
+public class GenericVersionRangeTest extends VersionRangeTest<GenericVersionRange, GenericVersion> {
 
-    @Override
-    protected OsgiVersion newVersion(String version) {
-        return new OsgiVersion(version);
+    protected GenericVersion newVersion(String version) {
+        return new GenericVersion(version);
     }
 
-    @Override
-    protected OsgiVersionRange parseValid(String range) {
+    protected GenericVersionRange parseValid(String range) {
         try {
-            return new OsgiVersionRange(range);
+            return new GenericVersionRange(range);
         } catch (InvalidVersionSpecificationException e) {
-            AssertionError error =
-                new AssertionError(range + " should be valid but failed to parse due to: " + e.getMessage());
+            AssertionError error = new AssertionError(range + " should be valid but failed to parse due to: " + e.getMessage());
             error.initCause(e);
             throw error;
         }
     }
 
-    @Override
     protected void parseInvalid(String range) {
         try {
-            new OsgiVersionRange(range);
+            new GenericVersionRange(range);
             fail(range + " should be invalid");
         } catch (InvalidVersionSpecificationException e) {
             assertTrue(true);
@@ -49,7 +52,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testLowerBoundInclusiveUpperBoundInclusive() {
-        OsgiVersionRange range = parseValid("[1,2]");
+        GenericVersionRange range = parseValid("[1,2]");
         assertContains(range, "1");
         assertContains(range, "1.1-SNAPSHOT");
         assertContains(range, "2");
@@ -58,7 +61,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testLowerBoundInclusiveUpperBoundExclusive() {
-        OsgiVersionRange range = parseValid("[1.2.3.4.5,1.2.3.4.6)");
+        GenericVersionRange range = parseValid("[1.2.3.4.5,1.2.3.4.6)");
         assertContains(range, "1.2.3.4.5");
         assertNotContains(range, "1.2.3.4.6");
         assertEquals(range, parseValid(range.toString()));
@@ -66,7 +69,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testLowerBoundExclusiveUpperBoundInclusive() {
-        OsgiVersionRange range = parseValid("(1a,1b]");
+        GenericVersionRange range = parseValid("(1a,1b]");
         assertNotContains(range, "1a");
         assertContains(range, "1b");
         assertEquals(range, parseValid(range.toString()));
@@ -74,7 +77,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testLowerBoundExclusiveUpperBoundExclusive() {
-        OsgiVersionRange range = parseValid("(1,3)");
+        GenericVersionRange range = parseValid("(1,3)");
         assertNotContains(range, "1");
         assertContains(range, "2-SNAPSHOT");
         assertNotContains(range, "3");
@@ -83,7 +86,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testSingleVersion() {
-        OsgiVersionRange range = parseValid("[1]");
+        GenericVersionRange range = parseValid("[1]");
         assertContains(range, "1");
         assertEquals(range, parseValid(range.toString()));
 
@@ -94,7 +97,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testSingleWildcardVersion() {
-        OsgiVersionRange range = parseValid("[1.2.*]");
+        GenericVersionRange range = parseValid("[1.2.*]");
         assertContains(range, "1.2-alpha-1");
         assertContains(range, "1.2-SNAPSHOT");
         assertContains(range, "1.2");
@@ -129,7 +132,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testSnapshotAndReleaseWithMinimum() {
-        OsgiVersionRange range = parseValid("[4.0.0.min,5)");
+        GenericVersionRange range = parseValid("[4.0.0.min,5)");
 
         assertContains(range, "4.0-alpha-1");
         assertContains(range, "4.0-SNAPSHOT");
@@ -141,7 +144,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testSnapshotAndReleaseWithoutMinimum() {
-        OsgiVersionRange range = parseValid("[4.0.0,5)");
+        GenericVersionRange range = parseValid("[4.0.0,5)");
 
         assertNotContains(range, "4.0-alpha-1");
         assertNotContains(range, "4.0-SNAPSHOT");
@@ -154,7 +157,7 @@ public class OsgiVersionRangeTest extends VersionRangeTest<OsgiVersionRange, Osg
 
     @Test
     public void testSnapshotAndReleaseWithMinAndMax() {
-        OsgiVersionRange range = parseValid("[4.0.0.min,5.0.0.min)");
+        GenericVersionRange range = parseValid("[4.min,5.min)");
 
         assertContains(range, "4.0-alpha-1");
         assertContains(range, "4.0-SNAPSHOT");

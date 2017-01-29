@@ -50,6 +50,12 @@
                 <artifactId>compatible</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.code-house.maven.resolver</groupId>
+                <artifactId>test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <!-- Manage aether slf 1.3 to upper bound -->
             <dependency>

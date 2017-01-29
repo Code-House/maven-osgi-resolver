@@ -1,13 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 2010, 2013 Sonatype, Inc.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/*
+ * (C) Copyright ${year} Code-House, Łukasz Dywicki.
  *
- * Contributors:
- *    Sonatype, Inc. - initial API and implementation
- *******************************************************************************/
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.code_house.maven.osgi.resolver.shared.version;
 
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
@@ -17,14 +22,18 @@ import org.osgi.framework.VersionRange;
 import java.util.Objects;
 
 /**
- * A version range inspired by mathematical range syntax. For example, "[1.0,2.0)", "[1.0,)" or "[1.0]".
+ * Version range implementation which is backed by {@link VersionRange} from osgi framework.
  */
 final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange {
 
     private final VersionRange range;
 
     OsgiVersionRange(String range) throws InvalidVersionSpecificationException {
-        this.range = new VersionRange(normalize(range));
+        try {
+            this.range = new VersionRange(range);
+        } catch (Exception e) {
+            throw new InvalidVersionSpecificationException("Invalid version range " + range, e);
+        }
     }
 
     @Override
@@ -70,14 +79,6 @@ final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange 
     @Override
     public String toString() {
         return range.toString();
-    }
-
-    private static String normalize(String range) {
-        // for versions which are not ranges osgi creates open range X,0.0.0, we don't want to do it, we want exact version
-        if (range.charAt(0) == VersionRange.LEFT_CLOSED || range.charAt(0) == VersionRange.LEFT_OPEN) {
-            return range;
-        }
-        return VersionRange.LEFT_CLOSED + range + ',' + range + VersionRange.RIGHT_CLOSED;
     }
 
 }

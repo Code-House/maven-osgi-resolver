@@ -3,7 +3,7 @@
         <component>
             <role>org.eclipse.aether.impl.VersionRangeResolver</role>
             <role-hint>default</role-hint>
-            <implementation>org.code_house.maven.osgi.resolver.OsgiVersionRangeResolver</implementation>
+            <implementation>org.code_house.maven.osgi.OsgiVersionRangeResolver</implementation>
             <description></description>
             <isolated-realm>false</isolated-realm>
         </component>

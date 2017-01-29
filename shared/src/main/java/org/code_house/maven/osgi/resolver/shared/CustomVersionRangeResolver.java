@@ -1,10 +1,23 @@
+/*
+ * (C) Copyright ${year} Code-House, Łukasz Dywicki.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.code_house.maven.osgi.resolver.shared;
 
 import com.google.common.base.Preconditions;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.code_house.maven.osgi.resolver.shared.version.OsgiVersionScheme;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.IOUtil;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.RepositorySystemSession;
@@ -22,16 +35,10 @@ import org.eclipse.aether.repository.WorkspaceReader;
 import org.eclipse.aether.resolution.MetadataRequest;
 import org.eclipse.aether.resolution.MetadataResult;
 import org.eclipse.aether.resolution.VersionRangeRequest;
-import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.spi.log.Logger;
 import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.spi.log.NullLoggerFactory;
-import org.eclipse.aether.util.version.GenericVersionScheme;
-import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.Version;
-import org.eclipse.aether.version.VersionConstraint;
-import org.eclipse.aether.version.VersionScheme;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
@@ -82,54 +89,6 @@ public abstract class CustomVersionRangeResolver implements VersionRangeResolver
     public final CustomVersionRangeResolver setRepositoryEventDispatcher(RepositoryEventDispatcher repositoryEventDispatcher) {
         this.repositoryEventDispatcher = Preconditions.checkNotNull(repositoryEventDispatcher,  "repositoryEventDispatcher cannot be null");
         return this;
-    }
-
-    public VersionRangeResult resolveVersionRange(RepositorySystemSession session, VersionRangeRequest request) throws VersionRangeResolutionException {
-        VersionRangeResult result = new VersionRangeResult(request);
-
-        VersionScheme osgiVersionScheme = new OsgiVersionScheme();
-        VersionScheme regularVersionScheme = new GenericVersionScheme();
-
-        VersionConstraint versionConstraint;
-        try {
-            versionConstraint = regularVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
-        } catch (InvalidVersionSpecificationException e) {
-            result.addException(e);
-            throw new VersionRangeResolutionException(result);
-        }
-
-        if (versionConstraint.getRange() == null) {
-            result.setVersionConstraint(versionConstraint);
-            result.addVersion(versionConstraint.getVersion());
-        } else {
-            try {
-                versionConstraint = osgiVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
-            } catch (InvalidVersionSpecificationException e) {
-                result.addException(e);
-                throw new VersionRangeResolutionException(result);
-            }
-            result.setVersionConstraint(versionConstraint);
-
-            Map<String, ArtifactRepository> versionIndex = getVersions(session, result, request);
-
-            List<Version> versions = new ArrayList<>();
-            for (Map.Entry<String, ArtifactRepository> v : versionIndex.entrySet()) {
-                try {
-                    Version ver = osgiVersionScheme.parseVersion(v.getKey());
-                    if (versionConstraint.containsVersion(ver)) {
-                        versions.add(ver);
-                        result.setRepository(ver, v.getValue());
-                    }
-                } catch (InvalidVersionSpecificationException e) {
-                    result.addException(e);
-                }
-            }
-
-            Collections.sort(versions);
-            result.setVersions(versions);
-        }
-
-        return result;
     }
 
     protected final Map<String, ArtifactRepository> getVersions(RepositorySystemSession session, VersionRangeResult result, VersionRangeRequest request) {
