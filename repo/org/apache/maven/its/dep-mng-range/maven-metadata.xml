@@ -33,8 +33,10 @@
             <version>3.0.3-SNAPSHOT</version>
             <version>3.0.4-SNAPSHOT</version>
             <version>3.0.5</version>
+            <version>4.0.0-rc1-SNAPSHOT</version>
+            <version>4.0.0-rc1</version>
+            <version>4.0.0</version>
             <version>4.0.0-SNAPSHOT</version>
-            <version>4.0.0-alpha2</version>
         </versions>
         <lastUpdated>20170123125242</lastUpdated>
     </versioning>

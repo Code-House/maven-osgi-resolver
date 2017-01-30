@@ -77,13 +77,10 @@ public class StrictOsgiVersionRangeResolver extends CustomVersionRangeResolver {
             List<Version> versions = new ArrayList<>();
             for (Map.Entry<String, ArtifactRepository> v : versionIndex.entrySet()) {
                 try {
-                    if (versionConstraint.containsVersion(osgiVersionScheme.parseVersion(v.getKey()))) {
-                        // here is whole magic of "compatibility", we use osgi range filtering logic to choose versions
-                        // but we use later on traditional maven versions to keep proper order (alpha < beta < release)
-                        // which might get broken when osgi treat them as qualifiers
-                        Version regularVersion = osgiVersionScheme.parseVersion(v.getKey());
-                        versions.add(regularVersion);
-                        result.setRepository(regularVersion, v.getValue());
+                    Version version = osgiVersionScheme.parseVersion(v.getKey());
+                    if (versionConstraint.containsVersion(version)) {
+                        versions.add(version);
+                        result.setRepository(version, v.getValue());
                     }
                 } catch (InvalidVersionSpecificationException e) {
                     result.addException(e);

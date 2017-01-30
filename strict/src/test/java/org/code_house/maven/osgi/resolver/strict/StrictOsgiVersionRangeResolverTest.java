@@ -1,22 +1,5 @@
-/*
- * (C) Copyright 2017 Code-House, Łukasz Dywicki.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.code_house.maven.resolver.compatible;
+package org.code_house.maven.osgi.resolver.strict;
 
-import org.code_house.maven.osgi.resolver.shared.CustomVersionRangeResolver;
-import org.code_house.maven.osgi.resolver.shared.version.OsgiVersion;
 import org.code_house.maven.osgi.resolver.test.AbstractRepositoryTestCase;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -30,18 +13,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompatibleOsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
+public class StrictOsgiVersionRangeResolverTest extends AbstractRepositoryTestCase {
 
-    private CompatibleOsgiVersionRangeResolver versionRangeResolver;
+    private StrictOsgiVersionRangeResolver versionRangeResolver;
 
-    public CompatibleOsgiVersionRangeResolverTest() {
+    public StrictOsgiVersionRangeResolverTest() {
 
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        versionRangeResolver = (CompatibleOsgiVersionRangeResolver) lookup(VersionRangeResolver.class);
+        versionRangeResolver = (StrictOsgiVersionRangeResolver) lookup(VersionRangeResolver.class);
     }
 
     @Override
@@ -84,14 +67,20 @@ public class CompatibleOsgiVersionRangeResolverTest extends AbstractRepositoryTe
 
         VersionRangeResult resultB = versionRangeResolver.resolveVersionRange(session, requestB);
         List<Version> versions = resultB.getVersions();
-        assertEquals(1, versions.size());
+
+        assertEquals(5, versions.size());
 
         LinkedList<String> resolved = new LinkedList<>();
         for (Version version : versions) {
             resolved.add(version.toString());
         }
 
-        assertEquals("3.0.5", resolved.getLast());
+        Iterator<String> iterator = resolved.iterator();
+        assertEquals("3.0.5", iterator.next());
+        assertEquals("4.0.0", iterator.next());
+        assertEquals("4.0.0-SNAPSHOT", iterator.next());
+        assertEquals("4.0.0-rc1", iterator.next());
+        assertEquals("4.0.0-rc1-SNAPSHOT", iterator.next());
     }
 
     @Test
@@ -112,10 +101,10 @@ public class CompatibleOsgiVersionRangeResolverTest extends AbstractRepositoryTe
         }
 
         Iterator<String> iterator = resolved.iterator();
-        assertEquals("4.0.0-rc1-SNAPSHOT", iterator.next());
-        assertEquals("4.0.0-rc1", iterator.next());
-        assertEquals("4.0.0-SNAPSHOT", iterator.next());
         assertEquals("4.0.0", iterator.next());
+        assertEquals("4.0.0-SNAPSHOT", iterator.next());
+        assertEquals("4.0.0-rc1", iterator.next());
+        assertEquals("4.0.0-rc1-SNAPSHOT", iterator.next());
     }
 
 }

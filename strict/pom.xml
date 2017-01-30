@@ -20,6 +20,11 @@
             <groupId>org.code-house.maven.resolver</groupId>
             <artifactId>shared</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.code-house.maven.resolver</groupId>
+            <artifactId>test</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
