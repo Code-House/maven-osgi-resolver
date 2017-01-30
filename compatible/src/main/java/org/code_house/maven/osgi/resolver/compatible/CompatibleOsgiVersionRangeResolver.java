@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.code_house.maven.resolver.compatible;
+package org.code_house.maven.osgi.resolver.compatible;
 
 import org.code_house.maven.osgi.resolver.shared.CustomVersionRangeResolver;
 import org.code_house.maven.osgi.resolver.shared.version.OsgiVersionScheme;
