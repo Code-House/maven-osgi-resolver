@@ -28,33 +28,40 @@ import java.util.Objects;
  * @author Łukasz Dywicki
  */
 public class OsgiVersionConstraint implements VersionConstraint {
-    private final String constraint;
-    private final OsgiVersionRange versionRange;
 
-    public OsgiVersionConstraint(String constraint) throws InvalidVersionSpecificationException {
-        this.versionRange = new OsgiVersionRange(constraint);
+    private final OsgiVersion version;
+    private final OsgiVersionRange range;
+    private final String constraint;
+
+    public OsgiVersionConstraint(boolean singleVersionAsRange, String constraint) throws InvalidVersionSpecificationException {
         this.constraint = constraint;
+        if (!isRange(constraint) && !singleVersionAsRange) {
+            this.version = new OsgiVersion(constraint);
+            this.range = null;
+        } else {
+            this.version = null;
+            this.range = new OsgiVersionRange(constraint);
+        }
     }
 
     @Override
     public org.eclipse.aether.version.VersionRange getRange() {
-        if (versionRange.isExact()) {
-            return null; // we have just one version
-        }
-        return versionRange;
+        return range;
     }
 
     @Override
     public org.eclipse.aether.version.Version getVersion() {
-        if (versionRange.isExact()) {
-            return new OsgiVersion(constraint);
-        }
-        return null;
+        return version;
     }
 
     @Override
     public boolean containsVersion(org.eclipse.aether.version.Version version) {
         return getRange().containsVersion(version);
+    }
+
+    protected final boolean isRange(String constraint) {
+        int lastCharacterIndex = constraint.length() - 1;
+        return (constraint.charAt(0) == '(' || constraint.charAt(0) == '[') && (constraint.charAt(lastCharacterIndex) == ')' || constraint.charAt(lastCharacterIndex) == ']');
     }
 
     @Override

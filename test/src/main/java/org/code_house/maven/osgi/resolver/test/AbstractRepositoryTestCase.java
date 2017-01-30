@@ -75,9 +75,8 @@ public abstract class AbstractRepositoryTestCase extends PlexusTestCase {
         return session;
     }
 
-    public static RemoteRepository newTestRepository()
-        throws MalformedURLException {
-        return new RemoteRepository.Builder("repo", "default", getTestFile("target/test-classes/repo").toURI().toURL().toString()).build();
+    public static RemoteRepository newTestRepository() throws MalformedURLException {
+        return new RemoteRepository.Builder("repo", "default", getTestFile("../repo").toURI().toURL().toString()).build();
     }
 
 }

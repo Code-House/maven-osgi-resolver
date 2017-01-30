@@ -25,6 +25,11 @@ import java.util.regex.Pattern;
 public final class OsgiVersionScheme implements VersionScheme {
 
     static final Pattern FUZZY_VERSION = Pattern.compile("(\\d+)(\\.(\\d+)(\\.(\\d+))?)?([^a-zA-Z0-9](.*))?", 32);
+    private final boolean singleVersionAsRange;
+
+    public OsgiVersionScheme(boolean singleVersionAsRange) {
+        this.singleVersionAsRange = singleVersionAsRange;
+    }
 
     @Override
     public org.eclipse.aether.version.Version parseVersion(String version) throws InvalidVersionSpecificationException {
@@ -38,7 +43,7 @@ public final class OsgiVersionScheme implements VersionScheme {
 
     @Override
     public VersionConstraint parseVersionConstraint(String constraint) throws InvalidVersionSpecificationException {
-        return new OsgiVersionConstraint(constraint);
+        return new OsgiVersionConstraint(singleVersionAsRange, constraint);
     }
 
     @Override

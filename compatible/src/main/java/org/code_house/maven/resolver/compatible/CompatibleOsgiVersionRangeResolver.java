@@ -56,27 +56,23 @@ public class CompatibleOsgiVersionRangeResolver extends CustomVersionRangeResolv
     public VersionRangeResult resolveVersionRange(RepositorySystemSession session, VersionRangeRequest request) throws VersionRangeResolutionException {
         VersionRangeResult result = new VersionRangeResult(request);
 
-        VersionScheme osgiVersionScheme = new OsgiVersionScheme();
-        VersionScheme regularVersionScheme = new GenericVersionScheme();
+        VersionScheme osgiVersionScheme = new OsgiVersionScheme(false);
+        VersionScheme genericVersionScheme = new GenericVersionScheme();
 
+        String rawVersion = request.getArtifact().getVersion();
         VersionConstraint versionConstraint;
         try {
-            versionConstraint = osgiVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
+            versionConstraint = osgiVersionScheme.parseVersionConstraint(rawVersion);
         } catch (InvalidVersionSpecificationException e) {
             result.addException(e);
             throw new VersionRangeResolutionException(result);
         }
 
-        if (versionConstraint.getRange() == null) { // exact version is given
+        if (versionConstraint.getRange() == null) {
+            // version is exact (ie. range is quite narrow) or passed version does not contain typical range characters so we do not use range but look for *specific* version
             result.setVersionConstraint(versionConstraint);
             result.addVersion(versionConstraint.getVersion());
         } else {
-            try {
-                versionConstraint = osgiVersionScheme.parseVersionConstraint(request.getArtifact().getVersion());
-            } catch (InvalidVersionSpecificationException e) {
-                result.addException(e);
-                throw new VersionRangeResolutionException(result);
-            }
             result.setVersionConstraint(versionConstraint);
 
             Map<String, ArtifactRepository> versionIndex = getVersions(session, result, request);
@@ -84,10 +80,13 @@ public class CompatibleOsgiVersionRangeResolver extends CustomVersionRangeResolv
             List<Version> versions = new ArrayList<>();
             for (Map.Entry<String, ArtifactRepository> v : versionIndex.entrySet()) {
                 try {
-                    Version ver = osgiVersionScheme.parseVersion(v.getKey());
-                    if (versionConstraint.containsVersion(ver)) {
-                        versions.add(ver);
-                        result.setRepository(ver, v.getValue());
+                    if (versionConstraint.containsVersion(osgiVersionScheme.parseVersion(v.getKey()))) {
+                        // here is whole magic of "compatibility", we use osgi range filtering logic to choose versions
+                        // but we use later on traditional maven versions to keep proper order (alpha < beta < release)
+                        // which might get broken when osgi treat them as qualifiers
+                        Version regularVersion = genericVersionScheme.parseVersion(v.getKey());
+                        versions.add(regularVersion);
+                        result.setRepository(regularVersion, v.getValue());
                     }
                 } catch (InvalidVersionSpecificationException e) {
                     result.addException(e);
@@ -101,8 +100,4 @@ public class CompatibleOsgiVersionRangeResolver extends CustomVersionRangeResolv
         return result;
     }
 
-    public static void main(String[] args) {
-        VersionRange versionRange = new VersionRange("2.0.0");
-        System.out.println(versionRange.getLeft() + " " + versionRange.getLeftType() + " " + versionRange.getRight() + " " + versionRange.getRightType());
-    }
 }

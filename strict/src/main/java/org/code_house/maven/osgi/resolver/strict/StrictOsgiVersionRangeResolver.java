@@ -55,8 +55,7 @@ public class StrictOsgiVersionRangeResolver extends CustomVersionRangeResolver {
     public VersionRangeResult resolveVersionRange(RepositorySystemSession session, VersionRangeRequest request) throws VersionRangeResolutionException {
         VersionRangeResult result = new VersionRangeResult(request);
 
-        VersionScheme osgiVersionScheme = new OsgiVersionScheme();
-        VersionScheme genericVersionScheme = new OsgiVersionScheme();
+        VersionScheme osgiVersionScheme = new OsgiVersionScheme(true);
 
         String rawVersion = request.getArtifact().getVersion();
         VersionConstraint versionConstraint;
@@ -67,8 +66,7 @@ public class StrictOsgiVersionRangeResolver extends CustomVersionRangeResolver {
             throw new VersionRangeResolutionException(result);
         }
 
-        if (versionConstraint.getRange() == null || (rawVersion.charAt(0) != '(' && rawVersion.charAt(0) != '[' && rawVersion.charAt(rawVersion.length()) != ')' && rawVersion.charAt(rawVersion.length()) != ']')) {
-            // version is exact (ie. range is quite narrow) or passed version does not contain typical range characters so we do not use range but look for *specific* version
+        if (versionConstraint.getRange() == null) {
             result.setVersionConstraint(versionConstraint);
             result.addVersion(versionConstraint.getVersion());
         } else {
@@ -83,7 +81,7 @@ public class StrictOsgiVersionRangeResolver extends CustomVersionRangeResolver {
                         // here is whole magic of "compatibility", we use osgi range filtering logic to choose versions
                         // but we use later on traditional maven versions to keep proper order (alpha < beta < release)
                         // which might get broken when osgi treat them as qualifiers
-                        Version regularVersion = genericVersionScheme.parseVersion(v.getKey());
+                        Version regularVersion = osgiVersionScheme.parseVersion(v.getKey());
                         versions.add(regularVersion);
                         result.setRepository(regularVersion, v.getValue());
                     }

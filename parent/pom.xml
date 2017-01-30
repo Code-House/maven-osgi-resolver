@@ -30,6 +30,7 @@
 
         <osgi.version>6.0.0</osgi.version>
         <guice.version>4.0</guice.version>
+        <log4j.version>1.2.17</log4j.version>
     </properties>
 
     <dependencyManagement>
@@ -115,6 +116,11 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -148,6 +154,13 @@
                 <version>${slf4j-api.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.eclipse.aether</groupId>
                 <artifactId>aether-transport-file</artifactId>
