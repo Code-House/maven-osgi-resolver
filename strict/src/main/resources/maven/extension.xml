@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<extension>
-    <exportedPackages>
-        <exportedPackage>META-INF/plexus/components.xml</exportedPackage>
-    </exportedPackages>
-</extension>
