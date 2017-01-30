@@ -11,9 +11,14 @@
     </parent>
 
     <artifactId>compatible</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Maven OSGi resolver :: Compatible</name>
     <description>Resolver implementation which keeps OSGi range resolution compatibility and maven's version order.</description>
+
+    <properties>
+        <osgi.embed>*;scope=compile;artifactId=shared;inline=true</osgi.embed>
+    </properties>
 
     <dependencies>
         <dependency>

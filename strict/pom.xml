@@ -11,9 +11,14 @@
     </parent>
 
     <artifactId>strict</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Maven OSGi resolver :: Strict</name>
     <description>Resolver implementation which keeps maximum compatibility with OSGi specification.</description>
+
+    <properties>
+        <osgi.embed>*;scope=compile;artifactId=shared;inline=true</osgi.embed>
+    </properties>
 
     <dependencies>
         <dependency>
