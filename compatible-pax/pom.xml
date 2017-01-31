@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ (C) Copyright 2017 Code-House, Łukasz Dywicki.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.code-house.maven.resolver</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.3.9-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.code-house.maven.resolver</groupId>
+    <artifactId>compatible-pax</artifactId>
+
+    <name>Maven OSGi Resolver :: Compatible Pax Fragment</name>
+    <description>Pax Url Aether fragment overriding maven internal package which allows to inject custom resolver.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.code-house.maven.resolver</groupId>
+            <artifactId>compatible-locator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.code-house.maven.resolver</groupId>
+            <artifactId>compatible</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <!--
+                Here we have example of monster executions block in maven which are doing step by step filtering of
+                jar contents. I miss you ant. I really do.
+                -->
+                <executions>
+                    <execution>
+                        <id>embed-locator</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                            First we embed static service locator implementation used by pax to initialize aether, and then
+                            relocate it to shaded package used by pax. We do not include manifest entry because it does not
+                            contain valid osgi metadata.
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.code-house.maven.resolver:compatible-locator</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <shadedPattern>shaded.</shadedPattern>
+                                    <includes>
+                                        <include>org.apache.maven.repository.internal.**</include>
+                                    </includes>
+                                </relocation>
+                            </relocations>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>MANIFEST.MF</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>embed-resolver</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                            Second step is straight, we do include implementation of version range resolver and then rewrite
+                            classes to internal namespace used by pax-url. Also we do not include manifest.
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.code-house.maven.resolver:compatible</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <shadedPattern>shaded.</shadedPattern>
+                                    <includes>
+                                        <include>org.sonatype.plexus.**</include>
+                                        <include>org.apache.maven.**</include>
+                                        <include>org.codehaus.plexus.**</include>
+                                        <include>org.eclipse.aether.**</include>
+                                    </includes>
+                                </relocation>
+                            </relocations>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>MANIFEST.MF</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>embed-pax</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                            At the end we just grab pax url with everything inside. Because service locator was shaded
+                            earlier maven-shade-plugin will emmit warning but will not override existing file in filesystem
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.ops4j.pax.url:pax-url-aether</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

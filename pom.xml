@@ -30,6 +30,8 @@
         <module>strict</module>
         <module>compatible</module>
         <module>test</module>
+        <module>compatible-locator</module>
+        <module>compatible-pax</module>
     </modules>
 
 </project>

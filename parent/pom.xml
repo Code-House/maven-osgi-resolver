@@ -31,6 +31,8 @@
         <guice.version>4.0</guice.version>
         <log4j.version>1.2.17</log4j.version>
 
+        <pax-url.version>2.5.2</pax-url.version>
+
         <!-- osgi related customizations -->
         <osgi.namespace>org.code_house.maven.osgi.resolver.${project.artifactId}</osgi.namespace>
         <osgi.import>*</osgi.import>
@@ -54,6 +56,11 @@
             <dependency>
                 <groupId>org.code-house.maven.resolver</groupId>
                 <artifactId>compatible</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.code-house.maven.resolver</groupId>
+                <artifactId>compatible-locator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -126,6 +133,12 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-aether</artifactId>
+                <version>${pax-url.version}</version>
             </dependency>
 
             <dependency>
