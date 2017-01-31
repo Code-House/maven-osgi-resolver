@@ -15,7 +15,6 @@
  */
 package org.code_house.maven.osgi.resolver.shared;
 
-import com.google.common.base.Preconditions;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.plexus.util.IOUtil;
@@ -47,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class CustomVersionRangeResolver implements VersionRangeResolver {
 
@@ -77,17 +77,17 @@ public abstract class CustomVersionRangeResolver implements VersionRangeResolver
     }
 
     public final CustomVersionRangeResolver setMetadataResolver(MetadataResolver metadataResolver) {
-        this.metadataResolver = Preconditions.checkNotNull(metadataResolver, "metadataResolver cannot be null");
+        this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver cannot be null");
         return this;
     }
 
     public final CustomVersionRangeResolver setSyncContextFactory(SyncContextFactory syncContextFactory) {
-        this.syncContextFactory = Preconditions.checkNotNull(syncContextFactory, "syncContextFactory cannot be null");
+        this.syncContextFactory = Objects.requireNonNull(syncContextFactory, "syncContextFactory cannot be null");
         return this;
     }
 
     public final CustomVersionRangeResolver setRepositoryEventDispatcher(RepositoryEventDispatcher repositoryEventDispatcher) {
-        this.repositoryEventDispatcher = Preconditions.checkNotNull(repositoryEventDispatcher,  "repositoryEventDispatcher cannot be null");
+        this.repositoryEventDispatcher = Objects.requireNonNull(repositoryEventDispatcher,  "repositoryEventDispatcher cannot be null");
         return this;
     }
 

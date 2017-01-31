@@ -24,7 +24,6 @@
         <sisu.version>0.3.2</sisu.version>
         <junit-jupiter-api.version>5.0.0-M3</junit-jupiter-api.version>
 
-        <guava.version>19.0</guava.version>
         <maven.version>3.3.9</maven.version>
         <slf4j-api.version>1.7.22</slf4j-api.version>
 
@@ -117,11 +116,6 @@
                 <version>1</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
