@@ -42,7 +42,7 @@ final class OsgiVersionRange implements org.eclipse.aether.version.VersionRange 
             return range.includes(((OsgiVersion) version).getVersion());
         }
 
-        return range.includes(new Version(version.toString()));
+        return range.includes(new Version(OsgiVersionScheme.normalize(version.toString())));
     }
 
     public boolean isEmpty() {
