@@ -35,6 +35,8 @@ import org.eclipse.aether.resolution.MetadataRequest;
 import org.eclipse.aether.resolution.MetadataResult;
 import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResult;
+import org.eclipse.aether.spi.locator.Service;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.spi.log.Logger;
 import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.spi.log.NullLoggerFactory;
@@ -48,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class CustomVersionRangeResolver implements VersionRangeResolver {
+public abstract class CustomVersionRangeResolver implements VersionRangeResolver, Service {
 
     protected static final String MAVEN_METADATA_XML = "maven-metadata.xml";
 
@@ -70,6 +72,13 @@ public abstract class CustomVersionRangeResolver implements VersionRangeResolver
         setSyncContextFactory(syncContextFactory);
         setLoggerFactory(loggerFactory);
         setRepositoryEventDispatcher(repositoryEventDispatcher);
+    }
+
+    public void initService(ServiceLocator locator) {
+        this.setLoggerFactory((LoggerFactory)locator.getService(LoggerFactory.class));
+        this.setMetadataResolver((MetadataResolver)locator.getService(MetadataResolver.class));
+        this.setSyncContextFactory((SyncContextFactory)locator.getService(SyncContextFactory.class));
+        this.setRepositoryEventDispatcher((RepositoryEventDispatcher)locator.getService(RepositoryEventDispatcher.class));
     }
 
     public final void setLoggerFactory(LoggerFactory loggerFactory) {
