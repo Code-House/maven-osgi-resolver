@@ -12,7 +12,7 @@
 
     <groupId>org.code-house.maven</groupId>
     <artifactId>resolver</artifactId>
-    <version>3.3.9-SNAPSHOT</version>
+    <version>3.3.9-alpha</version>
     <packaging>pom</packaging>
 
     <name>Maven OSGi Resolver</name>
@@ -22,7 +22,8 @@
         <connection>scm:git:git://github.com/Code-House/maven-osgi-resolver.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/Code-House/maven-osgi-resolver.git</developerConnection>
         <url>https://github.com/Code-House/maven-osgi-resolver</url>
-    </scm>
+      <tag>resolver-3.3.9-alpha</tag>
+  </scm>
 
     <modules>
         <module>parent</module>

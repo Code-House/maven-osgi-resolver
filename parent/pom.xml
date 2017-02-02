@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.code-house.maven</groupId>
         <artifactId>resolver</artifactId>
-        <version>3.3.9-SNAPSHOT</version>
+        <version>3.3.9-alpha</version>
     </parent>
 
     <groupId>org.code-house.maven.resolver</groupId>
@@ -37,7 +37,7 @@
         <osgi.namespace>org.code_house.maven.osgi.resolver.${project.artifactId}</osgi.namespace>
         <osgi.import>*</osgi.import>
         <osgi.export>${osgi.namespace}</osgi.export>
-        <osgi.embed></osgi.embed>
+        <osgi.embed />
     </properties>
 
     <dependencyManagement>
