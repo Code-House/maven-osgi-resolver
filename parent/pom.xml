@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.code-house.maven</groupId>
         <artifactId>resolver</artifactId>
-        <version>3.3.9-alpha</version>
+        <version>3.3.9-SNAPSHOT</version>
     </parent>
 
     <groupId>org.code-house.maven.resolver</groupId>
